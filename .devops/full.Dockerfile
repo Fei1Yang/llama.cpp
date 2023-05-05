@@ -14,7 +14,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN make
+RUN LLAMA_AVX2_ONLY=1 make
 
 ENV LC_ALL=C.utf8
 
