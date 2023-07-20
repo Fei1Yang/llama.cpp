@@ -45,6 +45,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up Docker Hub namespace
+        id: namespace
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{ github.repository_owner }}
+
       - name: Build and push Docker image (versioned)
         if: github.event_name == 'push'
         uses: docker/build-push-action@v4
@@ -52,7 +58,7 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: "ghcr.io/ggerganov/llama.cpp:${{ matrix.config.tag }}-${{ env.COMMIT_SHA }}"
+          tags: "ghcr.io/${{ steps.namespace.outputs.lowercase }}/llama.cpp:${{ matrix.config.tag }}-${{ env.COMMIT_SHA }}"
           file: ${{ matrix.config.dockerfile }}
 
       - name: Build and push Docker image (tagged)
@@ -61,5 +67,5 @@ jobs:
           context: .
           push: ${{ github.event_name == 'push' }}
           platforms: linux/amd64,linux/arm64
-          tags: "ghcr.io/ggerganov/llama.cpp:${{ matrix.config.tag }}"
+          tags: "ghcr.io/${{ steps.namespace.outputs.lowercase }}/llama.cpp:${{ matrix.config.tag }}"
           file: ${{ matrix.config.dockerfile }}
